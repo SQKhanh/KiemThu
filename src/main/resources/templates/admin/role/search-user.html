@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin-layout">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Show Roles</title>
+</head>
+
+<body>
+	<div class="user" layout:fragment="content">
+		<h1>Users List</h1>
+		<style>
+			.user {
+				padding: 70px 70px 70px 20px;
+				position: relative;
+			}
+
+			.user .customAddRole {
+				position: absolute;
+				top: 10%;
+				left: 30%;
+				border: 2px solid black;
+				width: 400px;
+				height: 400px;
+				background-color: white;
+				padding: 20px;
+				display: none;
+			}
+			#addrole, #deleterole {
+				display: none;
+			}
+			.x {
+				position: absolute;
+				right: 5%;
+				top: 2%;
+				cursor: pointer;
+			}
+		</style>
+
+		<div id="custom" class="customAddRole">
+			<h1>Users List</h1>
+			<div onclick="cancelAddRole()" class="x"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+					viewBox="0 0 24 24">
+					<path
+						d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z" />
+				</svg></div>
+			<form id="addrole">
+				
+				<div class="form-group">
+					<input style="width: 80%;" class="form-control" id="updateId" name="userId" type="hidden">
+
+					<label style="font-weight: bold;">Create Role Name: </label>
+					<input style="width: 80%;" class="form-control" name="code">
+				</div>
+				<button onclick="updateRole()" type="submit" class="btn btn-primary">Create</button>
+			</form>
+			
+			<form id="deleterole">
+				<div class="form-group">
+					<input style="width: 80%;" class="form-control" id="deleteId" name="userId" type="hidden">
+
+					<label style="font-weight: bold;">Input Role to delete: </label>
+					<input style="width: 80%;" class="form-control" name="roleName">
+				</div>
+				<button onclick="getAndDeleteRoleName()" type="submit" class="btn btn-primary">Delete</button>
+			</form>
+		</div>
+
+		<form id="seacrch-filter-user">
+			<div class="form-group">
+				<label></label>
+				<input class="form-control" name="username" placeholder="Search by Role Name">
+			</div>
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+
+
+		<table class="table">
+			<thead class="thead-dark" id="role-filter-form">
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Username</th>
+					<th scope="col">Role Name</th>
+					<th scope="col">First Name</th>
+					<th scope="col">Last Name</th>
+					<th scope="col">Phone Number</th>
+					<th scope="col">Created Date</th>
+					<th scope="col">ModifierDate</th>
+					<th scope="col">Created By</th>
+					<th scope="col">Latest Date Modified</th>
+					<th scope="col">Action</th>
+				</tr>
+			</thead>
+			<tbody id="list">
+			</tbody>
+		</table>
+		<div id="demo"></div>
+
+		<script>
+			const limit = 6;
+			const _$ = $;
+			let formValue = {};
+
+			function showAddRole(userId) {
+				document.getElementById("custom").style.display = "block"
+				document.getElementById("addrole").style.display = "block"				
+				document.getElementById("updateId").value = userId
+
+			}
+			function cancelAddRole() {
+				window.location.href = '/admin/role/user'
+			}
+			function updateRole() {
+				const roleValue = formToObject("#addrole");
+				const {userId, code} = roleValue;
+				pat("/api/v1/users/admin/" + userId + "/" + code)
+			}
+
+
+			function renderUser(users) {
+				let html = ``;
+				for (const a of users.data) {
+					let roleNameHTML = ``
+					for (const role of a.roleName) {
+						roleNameHTML += `
+									<p>${role}</p>
+							`
+					}
+					html += `
+						<tr id="userId_${a.userId}">
+							<th scope="col">${a.userId}</th>
+							<th scope="col">${a.username}</th>
+							<th scope="colgroup">${roleNameHTML}</th>
+							<th scope="col">${a.firstName}</th>
+							<th scope="col">${a.lastName}</th>
+							<th scope="col">${a.phoneNumber}</th>
+							<th scope="col">${a.createdDate}</th>
+							<th scope="col">${a.modifierDate}</th>
+							<th scope="col">${a.createdBy}</th>
+							<th scope="col">${a.modifierBy}</th>
+						
+							<th scope="col">
+								<button  onclick="showAddRole(${a.userId})" class="btn btn-primary">Add Role</button>
+								<div>
+								  <select onchange="selectDelete(${a.userId}, this)">
+								    <option value="0">Delete:</option>
+								    <option value="1">Delete User</option>
+								    <option value="2">Delete Role</option>
+								  </select>
+								</div>
+								</th>
+						</tr>
+					`
+				}
+				document.getElementById('list').innerHTML = html
+			}
+			function selectDelete(userId, obj) {
+				var value = obj.value;
+				if (value === "1") {
+				const isConfirm = confirm('Bạn có chắc muốn xóa không');
+					if (isConfirm) {
+						callDelete('/api/v1/users/' + userId)
+							.then(res => {
+								const userElement = document.querySelector('#userId_' + userId)
+								userElement.remove();
+							})
+					}
+				}else if(value === "2"){
+					document.getElementById("custom").style.display = "block"
+					document.getElementById("deleteId").value = userId
+					document.getElementById("deleterole").style.display = "block"
+				}
+			}
+			
+			function getAndDeleteRoleName(){
+				formValue = formToObject("#deleterole")
+				const {userId,roleName} = formValue
+				document.getElementById("custom").addEventListener('submit', (e) => {
+				const isConfirm = confirm('Bạn có chắc muốn xóa không');
+					if (isConfirm) {
+						callDelete('/api/v1/users/admin/deleteRole/' + userId+"/"+roleName)
+					}
+					})
+			}
+			
+			function getUserAndRender({page, limit}) {
+				get('/api/v1/users/admin/getAll', {
+					page,
+					limit, ...formValue
+				})
+					.then(users => {
+						renderUser(users)
+						_$("#demo").pagination("destroy")
+						const {page, totalItems, limit} = users;
+
+						showPagination({
+							totalItems: totalItems,
+							limit,
+							currentPage: page,
+							onPageClick: function (pageNumber) {
+								getUserAndRender({page: pageNumber, limit})
+								console.log(pageNumber)
+							}
+						})
+					})
+			}
+			const searchForm = document.getElementById("seacrch-filter-user")
+			searchForm.addEventListener('submit', (e) => {
+				e.preventDefault();
+				formValue = formToObject("#seacrch-filter-user")
+				getUserAndRender({
+					page: 1,
+					limit: limit
+				})
+			})
+
+			getUserAndRender({
+				page: 1,
+				limit: limit
+			})
+
+		</script>
+		<div>
+</body>
+
+</html>

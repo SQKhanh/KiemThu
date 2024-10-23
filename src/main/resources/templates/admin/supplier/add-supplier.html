@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="admin/admin-layout">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Add Supplier</title>
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<h1>Create Supplier</h1>
+		<form id="addSupplier" class="addform">
+			<div class="form-group">
+				<label>Supplier Name:</label>
+				<input name="name" class="form-control" placeholder="Supplier Name" required>
+			</div>
+			<div class="form-group">
+				<label>Phone: </label>
+				<input name="phone" class="form-control" placeholder="Phone">
+			</div>
+			<p id="invalid-feedback" style="color: red; display: none;">
+		        Phone numbers must be numeric and consist of 10 or 11 numbers.
+		      </p>
+			<div class="form-group">
+				<label>Description: </label>
+				<input name="description" class="form-control" placeholder="Description">
+			</div>
+			<div class="form-group">
+				<label>Email: </label>
+				<input name="email" type="email" class="form-control" placeholder="Email" required>
+			</div>
+			<button type="submit" class="btn btn-primary">Create</button>
+		</form>
+
+
+		<script>
+			const addForm = document.getElementById("addSupplier");
+			addForm.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const formValue = formToObject("#addSupplier")
+				const {phone} = formValue
+				if(phone.length > 11 || phone.length <9 || parseInt(phone)==null){
+					document.getElementById("invalid-feedback").style.display= "block"
+					return;
+					}
+				post('/admin/api/V1/supplier',formValue)
+				.then(
+					window.location.href = '/admin/supplier/search'
+					)
+			})
+		</script>
+	</div>
+</body>
+</html>
