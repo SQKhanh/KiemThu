@@ -4,11 +4,9 @@ import lombok.Data;
 
 @Data
 public class ImageDTO {
-	
-	private Long imageId;
-	private String url;
-	private String description;
-	
-	
-	
+
+    private Long imageId;
+    private String url;
+    private String description;
+
 }
