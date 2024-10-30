@@ -1,219 +1,218 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="admin/admin-layout">
+      layout:decorate="admin/admin-layout">
 
-<head>
-	<meta charset="UTF-8">
-	<title>Show Products List</title>
-	<style>
-		img{
-			width: 200px;
-			height: 350px;
-		}
-	</style>
+    <head>
+        <meta charset="UTF-8">
+        <title>Show Products List</title>
+        <style>
+            img{
+                width: 200px;
+                height: 350px;
+            }
+        </style>
 
-</head>
+    </head>
 
-<body>
-	<div layout:fragment="content">
-		<h1>Users Products List</h1>
-        <form id="product-filter-form">
-			<div class="form-group">
-				<input class="form-control" name="name" placeholder="Search by Product Name" />
-			</div>
-			<button class="btn btn-primary" type="submit">Search</button>
-
-
-		</form>
-
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>Id</th>
-					<th>Product Name</th>
-					<th>Description</th>
-                    <th>Import Price</th>
-                    <th>Product Price</th>
-                    <th>Discount Percent(%)</th>
-                    <th>Category Name</th>
-                    <th>Supplier Name</th>
-					<th>Created Date</th>
-					<th>Created By</th>
-					<th>Latest Date Modified</th>
-					<th>Modifier By</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody id="productList">
-
-			</tbody>
-		</table>
-		<div id="demo" style="display: flex; justify-content: flex-end;"></div>
+    <body>
+        <div layout:fragment="content">
+            <h1>Users Products List</h1>
+            <form id="product-filter-form">
+                <div class="form-group">
+                    <input class="form-control" name="name" placeholder="Search by Product Name" />
+                </div>
+                <button class="btn btn-primary" type="submit">Search</button>
 
 
-		<script>
-			const searchForm = document.querySelector('#product-filter-form');
-			const limit = 4;
-			let formValue = {};
+            </form>
 
-			searchForm.addEventListener('submit', (e) => {
-				e.preventDefault();
-				formValue = formToObject('#product-filter-form');
-				console.log(formValue);
-				getProductsAndRender({
-					page: 1,
-					limit: limit,
-				})
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Product Name</th>
+                        <th>Description</th>
+                        <th>Import Price</th>
+                        <th>Product Price</th>
+                        <th>Discount Percent(%)</th>
+                        <th>Category Name</th>
+                        <th>Supplier Name</th>
+                        <th>Created Date</th>
+                        <th>Created By</th>
+                        <th>Latest Date Modified</th>
+                        <th>Modifier By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="productList">
 
-			})
+                </tbody>
+            </table>
+            <div id="demo" style="display: flex; justify-content: flex-end;"></div>
 
-			const _$ = $;
 
-			showPagination({
-				totalItems: 1,
-				limit,
-				currentPage: 1,
-				onPageClick: () => { }
-			})
+            <script>
+                const searchForm = document.querySelector('#product-filter-form');
+                const limit = 4;
+                let formValue = {};
+                searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                formValue = formToObject('#product-filter-form');
+                console.log(formValue);
+                getProductsAndRender({
+                page: 1,
+                        limit: limit,
+                })
+
+                })
+
+                        const _$ = $;
+                showPagination({
+                totalItems: 1,
+                        limit,
+                        currentPage: 1,
+                        onPageClick: () => {
+                }
+                })
+
+
+                        function renderProducts(products) {
+                        let html = '';
+                        for (const product of products) {
+                        const ImageId = `images_${product.productId}`;
+                        html += `
+                                <tr id="product_${product.productId}">
+                                                  <td>${product.productId}</td>						
+                                                            <td>${product.name}</td>						
+                                                            <td>${product.description}</td>
+                                                            <td>${product.importPrice}</td>								
+                                                            <td>${product.price}</td>								
+                                                    <td>${product.discountPercent}</td>								
+                                            <td>${product.category}</td>								
+                                            <td>${product.suppilier}</td>								
+                                            <td>${product.createDate}</td>						
+                                            <td>${product.createBy}</td>						
+                        <td>${product.modifierDate}</td>						
+                        <td>${product.modifierBy}</td>		
+                        <td>
+                                                     <a href="/admin/products/${product.productId}">
+                                                     <button class="btn btn-primary">Update</button>
+                                                
+                                            </a>
+                                            <button onclick="deleteProduct(${product.productId})" class="btn btn-danger">Delete</button>
+                                                            <!-- Button trigger modal -->
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal_${ImageId}">
+                                                    Image
+                                    </button>
+                                    
+                                    <!-- Modal -->
+                        <div class="modal fade" id="exampleModal_${ImageId}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                                                     <div class="modal-body">
+                                                  <div id="carouselExampleControls_${ImageId}" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner images" id="${ImageId}" >
+                        
+                                                            </div>	
+                                                            <a class="carousel-control-prev" href="#carouselExampleControls_${ImageId}" role="button" data-slide="prev">
+                                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExampleControls_${ImageId}" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                        </a>
+                        </div>
+                                                     </div>
+                                                     </div>
+                                                     </div>
+                                                  </div>
+                                                  </td>				
+                                                </tr>
+                                            `;
+                        
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            }
+                                                    document.querySelector("#productList").innerHTML = html;
+                                    }
+                                    function renderImage(products){
+                                for (const product of products){
+                        const images = document.querySelector(`#images_${product.productId}`);
+                        let insideHTML = '';
+                        let index = 0;
+                        for (const image of product.imageDTOs){
+                        if (index === 0) {
+                        insideHTML += `
+                                                     <div class="carousel-item active">
+                                                  <img class="d-block w-100" src="${image.url}">
+                                                </div>
+                                            `;
+                        } else {
+                        insideHTML += `
+                                                            <div class="carousel-item" style="width: 500px;">
+                                                            <img class="d-block w-100" src="${image.url}">
+                                                            </div>
+                                                    `;
+                }
+ index++;
+                                  }
+                                    if(insideHTML == ''){
+                                            insideHTML += '<h4>This product hafve no Image</h4>'
+                                    }
+                                    images.innerHTML = insideHTML;
+                            }
+                    }
+
+                    function deleteProduct(productId) {
+                            console.log(productId)
+                            const isConfirm = confirm('Bạn có chắc muốn xóa sản phẩm này không');
+                            console.log(isConfirm);
+                            if (isConfirm) {
+                                    callDelete('/admin/api/v1/products/' + productId)
+                                            .then(res => {
+                                                    const productElement = document.querySelector('#product_' + productId);
+                                                    productElement.remove();
+                                            })
+                            }
+                    }
 			
-
-			function renderProducts(products) {
-				let html = '';
-				for (const product of products) {
-					const ImageId = `images_${product.productId}`;
-					html += `
-						<tr id="product_${product.productId}">
-							<td>${product.productId}</td>						
-							<td>${product.name}</td>						
-							<td>${product.description}</td>
-							<td>${product.importPrice}</td>								
-							<td>${product.price}</td>								
-							<td>${product.discountPercent}</td>								
-							<td>${product.category}</td>								
-							<td>${product.suppilier}</td>								
-							<td>${product.createDate}</td>						
-							<td>${product.createBy}</td>						
-							<td>${product.modifierDate}</td>						
-							<td>${product.modifierBy}</td>		
-							<td>
-								<a href="/admin/products/${product.productId}">
-									<button class="btn btn-primary">Update</button>
-									
-								</a>
-								<button onclick="deleteProduct(${product.productId})" class="btn btn-danger">Delete</button>
-								<!-- Button trigger modal -->
-								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal_${ImageId}">
-								Image
-								</button>
-
-								<!-- Modal -->
-								<div class="modal fade" id="exampleModal_${ImageId}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-								<div class="modal-dialog" role="document">
-									<div class="modal-content">
-									<div class="modal-body">
-										<div id="carouselExampleControls_${ImageId}" class="carousel slide" data-ride="carousel">
-											<div class="carousel-inner images" id="${ImageId}" >
-												
-											</div>	
-											<a class="carousel-control-prev" href="#carouselExampleControls_${ImageId}" role="button" data-slide="prev">
-												<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-												<span class="sr-only">Previous</span>
-											</a>
-											<a class="carousel-control-next" href="#carouselExampleControls_${ImageId}" role="button" data-slide="next">
-												<span class="carousel-control-next-icon" aria-hidden="true"></span>
-												<span class="sr-only">Next</span>
-											</a>
-										</div>
-									</div>
-									</div>
-								</div>
-								</div>
-							</td>				
-						</tr>
-					`;
-					
-					
-					
-					
+                    function getProductsAndRender({page, limit}) {
+                            get(`/admin/api/v1/products`, {
+                                    page,
+                                    limit,
+                                    ...formValue
+                            })
+                                    .then(pageDto => {
+                                            console.log(pageDto);
+                                            renderProducts(pageDto.data);
+                                            renderImage(pageDto.data);
+                                            _$("#demo").pagination("destroy");
+                                            const {page, totalItems, limit} = pageDto;
+                                            showPagination({
+                                                    totalItems,
+                                                    limit,
+                                                    currentPage: page,
+                                                    onPageClick: function (pageNumber) {
+                                                            getProductsAndRender({page: pageNumber, limit})
+                                                            console.log(pageNumber)
+                                                    }
+                                            })
+                                    })
+                    }
 
 
-				}
-				document.querySelector("#productList").innerHTML = html;
-			}
-			function renderImage(products){
-				for(const product of products){
-					const images = document.querySelector(`#images_${product.productId}`);
-					let insideHTML = '';
-					let index = 0;
-					for(const image of product.imageDTOs){
-						if(index === 0) {
-						insideHTML += `
-							 <div class="carousel-item active">
-						      <img class="d-block w-100" src="${image.url}">
-						    </div>
-						`;
-						} else {
-							insideHTML += `
-								<div class="carousel-item" style="width: 500px;">
-								<img class="d-block w-100" src="${image.url}">
-								</div>
-							`;
-						}
-						index++;
-					}
-					if(insideHTML == ''){
-						insideHTML += '<h4>This product have no Image</h4>'
-					}
-					images.innerHTML = insideHTML;
-				}
-			}
+                    getProductsAndRender({
+                            page: 1,
+                            limit: limit
+                    });
+                    const images = document.querySelector(".images");
+                    const imageDtos = [];
 
-			function deleteProduct(productId) {
-				console.log(productId)
-				const isConfirm = confirm('Bạn có chắc muốn xóa sản phẩm này không');
-				console.log(isConfirm);
-				if (isConfirm) {
-					callDelete('/admin/api/v1/products/' + productId)
-						.then(res => {
-							const productElement = document.querySelector('#product_' + productId);
-							productElement.remove();
-						})
-				}
-			}
-			
-			function getProductsAndRender({page, limit}) {
-				get(`/admin/api/v1/products`, {
-					page,
-					limit,
-					...formValue
-				})
-					.then(pageDto => {
-						console.log(pageDto);
-						renderProducts(pageDto.data);
-						renderImage(pageDto.data);
-						_$("#demo").pagination("destroy");
-						const {page, totalItems, limit} = pageDto;
-						showPagination({
-							totalItems,
-							limit,
-							currentPage: page,
-							onPageClick: function (pageNumber) {
-								getProductsAndRender({page: pageNumber, limit})
-								console.log(pageNumber)
-							}
-						})
-					})
-			}
-
-
-			getProductsAndRender({
-				page: 1,
-				limit: limit
-			});
-			const images = document.querySelector(".images");
-			const imageDtos = [];
-
-		</script>
-    </div>
-</body>
+            </script>
+        </div>
+    </body>
 </html>

@@ -12,6 +12,7 @@ import lombok.Data;
 
 @Data
 public class CreateProductDTO {
+
     private Long productId;
     private String name;
     private Double importPrice;
@@ -21,17 +22,20 @@ public class CreateProductDTO {
     private String category;  // Sử dụng String cho category
     private String suppilier;
     private List<MultipartFile> multipartFiles = new ArrayList<>();
-    public void addFiles(List<MultipartFile> multipartFiles){
-        for(MultipartFile multipartFile : multipartFiles){
+
+    public void addFiles(List<MultipartFile> multipartFiles) {
+        for (MultipartFile multipartFile : multipartFiles) {
             this.multipartFiles.add(multipartFile);
         }
     }
+    
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-	private Date createDate;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-	private Date modifierDate;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-	private String createBy;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-	private String modifierBy;
+    private Date createDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    private Date modifierDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    private String createBy;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    private String modifierBy;
 }

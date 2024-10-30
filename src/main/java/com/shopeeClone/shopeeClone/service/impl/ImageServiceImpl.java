@@ -21,6 +21,7 @@ import com.shopeeClone.shopeeClone.exeption.ValidateException;
 import com.shopeeClone.shopeeClone.repository.ImageRepository;
 import com.shopeeClone.shopeeClone.repository.ProductRepository;
 import com.shopeeClone.shopeeClone.service.ImageService;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -31,17 +32,20 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ProductRepository productRepository;
 
+    private static final String PATH_SAVE_IMAGE = "kamizz/public/uploads/";
+    private static final String urlImage = "http://localhost:7070/public/uploads/";
+
     @Override
     public List<ImageDTO> saveImage(List<MultipartFile> files) {
         List<ImageDTO> imageDTOs = new ArrayList<>();
         for (MultipartFile file : files) {
-            String fileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString() + ".png";
             try {
                 // Lưu file
                 InputStream inputStream = file.getInputStream();
                 byte[] buffer = new byte[inputStream.available()];
                 inputStream.read(buffer);
-                File newFile = new File("src/main/resources/static/ProductImages/" + fileName);
+                File newFile = new File(PATH_SAVE_IMAGE + fileName);
                 OutputStream outputStream
                         = new FileOutputStream(newFile);
                 outputStream.write(buffer);
@@ -50,33 +54,14 @@ public class ImageServiceImpl implements ImageService {
             }
 
             ImageDTO imageDTO = new ImageDTO();
-            imageDTO.setUrl("/ProductImages/" + fileName);
+            imageDTO.setUrl(urlImage + fileName);
+            
+//            System.out.println("url: " + imageDTO.getUrl());
+            
             imageDTOs.add(imageDTO);
 
         }
         return imageDTOs;
-    }
-
-    @Override
-    public void deleteImage(List<ImageEntity> imageEntities) {
-        for (ImageEntity imageEntity : imageEntities) {
-            //Xoa image trong static
-            File deleteImage = new File("src/main/resources/static" + imageEntity.getUrl());
-            deleteImage.delete();
-            imageRepository.findById(imageEntity.getImageId())
-                    .orElseThrow(() -> new ValidateException("Khong tim thay image trong database"));
-            imageRepository.deleteById(imageEntity.getImageId());
-        }
-    }
-
-    @Override
-    public void deleteEachImage(Long imageId) {
-        ImageEntity imageEntity = imageRepository.findById(imageId).orElseThrow(() -> new ValidateException("khong tim thay anh"));
-        File deleteImage = new File("src/main/resources/static" + imageEntity.getUrl());
-        System.out.println(imageEntity.getUrl());
-        deleteImage.delete();
-        imageRepository.deleteById(imageEntity.getImageId());
-
     }
 
     @Override
@@ -85,20 +70,20 @@ public class ImageServiceImpl implements ImageService {
                 .orElseThrow(() -> new ValidateException("Khong tim thay product"));
         for (MultipartFile file : multipartFiles) {
             ImageEntity imageEntity = new ImageEntity();
-            String fileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID().toString() + ".png";
             try {
                 // Lưu file
                 InputStream inputStream = file.getInputStream();
                 byte[] buffer = new byte[inputStream.available()];
                 inputStream.read(buffer);
-                File newFile = new File("src/main/resources/static/ProductImages/" + fileName);
+                File newFile = new File(PATH_SAVE_IMAGE + fileName);
                 OutputStream outputStream
                         = new FileOutputStream(newFile);
                 outputStream.write(buffer);
             } catch (IOException e) {
                 throw new ValidateException("Server error");
             }
-            imageEntity.setUrl("/ProductImages/" + fileName);
+            imageEntity.setUrl(urlImage + fileName);
             imageEntity.setProduct(productEntity);
             imageRepository.save(imageEntity);
             productEntity.addImageEntity(imageEntity);
@@ -107,6 +92,28 @@ public class ImageServiceImpl implements ImageService {
         productRepository.save(productEntity);
 
         return null;
+    }
+
+    @Override
+    public void deleteImage(List<ImageEntity> imageEntities) {
+//        for (ImageEntity imageEntity : imageEntities) {
+//            //Xoa image trong static
+//            File deleteImage = new File("src/main/resources/static" + imageEntity.getUrl());
+//            deleteImage.delete();
+//            imageRepository.findById(imageEntity.getImageId())
+//                    .orElseThrow(() -> new ValidateException("Khong tim thay image trong database"));
+//            imageRepository.deleteById(imageEntity.getImageId());
+//        }
+    }
+
+    @Override
+    public void deleteEachImage(Long imageId) {
+//        ImageEntity imageEntity = imageRepository.findById(imageId).orElseThrow(() -> new ValidateException("khong tim thay anh"));
+//        File deleteImage = new File("src/main/resources/static" + imageEntity.getUrl());
+//        System.out.println(imageEntity.getUrl());
+//        deleteImage.delete();
+//        imageRepository.deleteById(imageEntity.getImageId());
+
     }
 
 }

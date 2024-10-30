@@ -68,6 +68,7 @@ public class ProductConverter {
         }
         return productDTOs;
     }
+    
     public List<ProductEntity> toEntityList(List<CreateProductDTO> productDTOs){
         List<ProductEntity> productEntities = new ArrayList<>();
         for(CreateProductDTO productDTO : productDTOs){
